@@ -12,3 +12,127 @@ GenAllienMail/
 ├── package.json
 ├── tsconfig.json
 └── README.md
+import { useState } from 'react';
+
+export default function Home() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState('');
+
+  const generateEmail = async () => {
+    setLoading(true);
+    setResult('');
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      setResult(data.result);
+    } catch (err) {
+      setResult('Error generando correo');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <main style={{ textAlign: 'center', padding: '2rem' }}>
+      <h1>GenAllienMail</h1>
+      <p>Generador de correos temporales</p>
+      <input
+        type="text"
+        placeholder="Nombre o alias"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={{ padding: '0.5rem', width: '60%' }}
+      />
+      <br /><br />
+      <button onClick={generateEmail} disabled={loading}>
+        {loading ? 'Generando...' : 'Generar'}
+      </button>
+      <br /><br />
+      {result && (
+        <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{result}</div>
+      )}
+    </main>
+  );
+}
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const { email } = req.body;
+    const random = Math.random().toString(36).substring(2, 8);
+    const domain = 'allienmail.com'; // ficticio o para redirigir a dominio real
+    const tempEmail = `${email || 'user'}-${random}@${domain}`;
+    res.status(200).json({ result: tempEmail });
+  } else {
+    res.status(405).end();
+  }
+}
+{
+  "name": "genallienmail",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^13.4.12",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve"
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+}
+input, button {
+  border: none;
+  border-radius: 4px;
+}
+button {
+  padding: 0.6rem 1.2rem;
+  background: #10b981;
+  color: white;
+  cursor: pointer;
+}
+# GenAllienMail
+
+Generador de correos temporales vinculado a Allienstream.  
+Funciona en web, Vercel y versiones móviles APK (en preparación).
+
+## Scripts
+- `npm run dev` → desarrollo local
+- `npm run build` → producción
+- `npm start` → iniciar build
+
+## Autor
+Tania / Allienstream
