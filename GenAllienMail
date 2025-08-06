@@ -1,1 +1,14 @@
-
+GenAllienMail/
+├── public/
+│   └── logo.png
+├── pages/
+│   ├── index.tsx
+│   └── api/
+│       └── generate.ts
+├── styles/
+│   └── globals.css
+├── utils/
+│   └── mail.ts
+├── package.json
+├── tsconfig.json
+└── README.md
